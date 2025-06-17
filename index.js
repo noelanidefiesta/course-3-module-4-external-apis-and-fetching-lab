@@ -35,3 +35,67 @@
 
 // Event Listener for Fetch Button
 // - Attach the main event listener to the button to start the process
+
+// My code below
+
+// Replaced with my own API key from openweathermap.org
+const API_KEY = 7ee1fbbe10852aed2402105f3600564a; // <-- PUT YOUR API KEY HERE
+
+// Step 1: Fetch Weather Data
+async function fetchWeatherData(city) {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('City not found. Please try again.');
+        }
+        const data = await response.json();
+        displayWeather(data);
+    } catch (error) {
+        displayError(error.message);
+    }
+}
+
+// Step 2: Display Weather Data
+function displayWeather(data) {
+    const weatherDiv = document.getElementById('weather-display');
+    const errorDiv = document.getElementById('error-message');
+
+    // Clear any previous error
+    errorDiv.classList.add('hidden');
+    errorDiv.textContent = '';
+
+    // Update weather section
+    weatherDiv.innerHTML = `
+    <h2>Weather in ${data.name}</h2>
+    <p><strong>Temperature:</strong> ${data.main.temp} °C</p>
+    <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
+    <p><strong>Description:</strong> ${data.weather[0].description}</p>
+  `;
+}
+
+// Step 3: Display Error Message
+function displayError(message) {
+    const errorDiv = document.getElementById('error-message');
+    const weatherDiv = document.getElementById('weather-display');
+
+    // Clear weather info
+    weatherDiv.innerHTML = '';
+
+    // Show error message
+    errorDiv.textContent = message;
+    errorDiv.classList.remove('hidden');
+}
+
+// Step 4: Handle User Input
+document.getElementById('fetch-weather').addEventListener('click', () => {
+    const cityInput = document.getElementById('city-input').value.trim();
+
+    if (cityInput === '') {
+        displayError('Please enter a city name.');
+        return;
+    }
+
+    fetchWeatherData(cityInput);
+});
